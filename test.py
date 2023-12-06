@@ -1,4 +1,4 @@
-from src.topaz.topaz import TopazAPI
+from topaz import TopazAPI
 import pandas as pd
 
 api_key = 'YOUR_API_KEY_HERE'
