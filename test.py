@@ -48,8 +48,23 @@ topaz_api = TopazAPI(api_key)
 # print(topaz_api.search_trainers(search_term='ivan', exact_match=False, records=300))
 # print(topaz_api.get_trial_results(from_date='2023-12-01', to_date='2023-12-06'))
 
-races = topaz_api.get_races(from_date='2023-12-01', to_date='2023-12-06')
-race_ids = list(races['raceId'].unique())
+
+
+authority_codes = [ 'NSW', 'NT', 'QLD', 'SA', 'TAS', 'VIC', 'WA']
+all_races = []
+
+for code in authority_codes:
+    try:
+        races = topaz_api.get_races(from_date='2023-12-01', to_date='2023-12-06', owning_authority_code=code)
+        all_races.append(races)
+    except Exception as e:
+        print(f"Error fetching races for {code}: {e}")
+
+# Concatenate all fetched races into a single DataFrame
+all_races_df = pd.concat(all_races, ignore_index=True)
+
+# Extract unique race IDs
+race_ids = list(all_races_df['raceId'].unique())
 
 race_runs = []
 for race_id in race_ids:
