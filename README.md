@@ -21,16 +21,22 @@ topaz_api = TopazAPI(api_key)
 
 ## Suggested work flow
 ```
-# Might take 4 or 5 mins to run
-races = topaz_api.get_races(from_date='2023-12-01', to_date='2023-12-06')
-race_ids = list(races['raceId'].unique())
+import pandas as pd
 
-race_runs = []
-for race_id in race_ids:
-    race_run = topaz_api.get_race_runs(race_id=race_id)
-    race_runs.append(race_run)
+authority_codes = [ 'NSW', 'NT', 'QLD', 'SA', 'TAS', 'VIC', 'WA']
+all_races = []
 
-race_runs = pd.concat(race_runs)
-print(race_runs)
+for code in authority_codes:
+    try:
+        races = topaz_api.get_races(from_date='2023-12-01', to_date='2023-12-06', owning_authority_code=code)
+        all_races.append(races)
+    except Exception as e:
+        print(f"Error fetching races for {code}: {e}")
+
+# Concatenate all fetched races into a single DataFrame
+all_races_df = pd.concat(all_races, ignore_index=True)
+
+# Extract unique race IDs
+race_ids = list(all_races_df['raceId'].unique())
 ```
 
