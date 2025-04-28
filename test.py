@@ -47,10 +47,10 @@ topaz_api = TopazAPI(api_key)
 # print(topaz_api.get_cache_health())
 # print(topaz_api.search_trainers(search_term='ivan', exact_match=False, records=300))
 # print(topaz_api.get_trial_results(from_date='2023-12-01', to_date='2023-12-06'))
+# print(topaz_api.get_bulk_runs_by_day(owning_authority_code='VIC', year=2023, month=12, day=1))
+# print(topaz_api.get_bulk_runs_by_month(owning_authority_code='VIC', year=2023, month=12))
 
-
-
-authority_codes = [ 'NSW', 'NT', 'QLD', 'SA', 'TAS', 'VIC', 'WA']
+authority_codes = ['NSW', 'NT', 'QLD', 'SA', 'TAS', 'VIC', 'WA']
 all_races = []
 
 for code in authority_codes:

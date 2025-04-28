@@ -851,3 +851,99 @@ class TopazAPI:
 
     ### Wagering
     ### Watchdog
+
+    ### Bulk Data
+    def get_bulk_runs_by_day(self, owning_authority_code: str, year: int, month: int, day: int) -> pd.DataFrame:
+        """
+        Retrieves bulk run data for a specific day and specific jurisdiction.
+
+        Args:
+            owning_authority_code (str): The code of the owning authority. 
+                                       Must be one of: 'ACT', 'NSW', 'NT', 'QLD', 'SA', 'TAS', 'VIC', 'WA', 'NZ'.
+            year (int): The year for which to retrieve data.
+            month (int): The month for which to retrieve data.
+            day (int): The day for which to retrieve data.
+
+        Returns:
+            pd.DataFrame: A DataFrame containing bulk run data for the specified day and jurisdiction.
+
+        Raises:
+            ValueError: If the owning authority code is invalid or if the request parameters are invalid.
+            PermissionError: If the user does not have access to the requested data.
+            HTTPError: If the API returns an error response.
+        """
+        # Validate owning authority code
+        valid_authority_codes = ['ACT', 'NSW', 'NT', 'QLD', 'SA', 'TAS', 'VIC', 'WA', 'NZ']
+        if owning_authority_code not in valid_authority_codes:
+            raise ValueError(f"Invalid owning authority code: {owning_authority_code}. "
+                             f"Must be one of: {', '.join(valid_authority_codes)}")
+
+        response = requests.get(
+            f"{self.base_url}/bulk/runs/{owning_authority_code}/{year}/{month}/{day}", 
+            headers=self.headers, 
+            timeout=30
+        )
+        
+        if response.status_code == 200:
+            # Convert the list of BulkRunOutput objects to a DataFrame
+            return pd.DataFrame(response.json())
+        elif response.status_code == 400:  # Bad Request
+            error_msg = response.json().get('message', 'Bad request - The request was malformed')
+            raise ValueError(f"Invalid request parameters: {error_msg}")
+        elif response.status_code == 401:  # Unauthorized access
+            raise PermissionError("You are not authorized to access this data.")
+        elif response.status_code == 404:  # No data found
+            # Return an empty DataFrame instead of raising an error
+            return pd.DataFrame()
+        elif response.status_code == 422:  # Validation Failed
+            error_msg = response.json().get('message', 'Validation failed')
+            raise ValueError(f"Validation error: {error_msg}")
+        else:
+            response.raise_for_status()  # Raises an HTTPError for other unsuccessful status codes
+
+    def get_bulk_runs_by_month(self, owning_authority_code: str, year: int, month: int) -> pd.DataFrame:
+        """
+        Retrieves bulk run data for a specified month and year for a given owning authority code.
+
+        Args:
+            owning_authority_code (str): The code of the owning authority. 
+                                       Must be one of: 'ACT', 'NSW', 'NT', 'QLD', 'SA', 'TAS', 'VIC', 'WA', 'NZ'.
+            year (int): The year for which to retrieve data.
+            month (int): The month for which to retrieve data.
+
+        Returns:
+            pd.DataFrame: A DataFrame containing bulk run data for the specified month, year, and jurisdiction.
+
+        Raises:
+            ValueError: If the owning authority code is invalid or if the request parameters are invalid.
+            PermissionError: If the user does not have access to the requested data.
+            HTTPError: If the API returns an error response.
+        """
+        # Validate owning authority code
+        valid_authority_codes = ['ACT', 'NSW', 'NT', 'QLD', 'SA', 'TAS', 'VIC', 'WA', 'NZ']
+        if owning_authority_code not in valid_authority_codes:
+            raise ValueError(f"Invalid owning authority code: {owning_authority_code}. "
+                             f"Must be one of: {', '.join(valid_authority_codes)}")
+
+        response = requests.get(
+            f"{self.base_url}/bulk/runs/{owning_authority_code}/{year}/{month}", 
+            headers=self.headers, 
+            timeout=30
+        )
+        
+        if response.status_code == 200:
+            # Convert the list of BulkRunOutput objects to a DataFrame
+            return pd.DataFrame(response.json())
+        elif response.status_code == 400:  # Bad Request
+            error_msg = response.json().get('message', 'Bad request - The request was malformed')
+            raise ValueError(f"Invalid request parameters: {error_msg}")
+        elif response.status_code == 401:  # Unauthorized access
+            raise PermissionError("You are not authorized to access this data.")
+        elif response.status_code == 404:  # No data found
+            # Return an empty DataFrame instead of raising an error
+            return pd.DataFrame()
+        elif response.status_code == 422:  # Validation Failed
+            error_msg = response.json().get('message', 'Validation failed')
+            raise ValueError(f"Validation error: {error_msg}")
+        else:
+            response.raise_for_status()  # Raises an HTTPError for other unsuccessful status codes
