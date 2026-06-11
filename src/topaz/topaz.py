@@ -338,6 +338,55 @@ class TopazAPI:
         else:
             response.raise_for_status()  # Raises an HTTPError for other unsuccessful status codes
 
+    def get_isolynx_positions(self, race_id: int) -> dict:
+        """
+        Returns a list of runners with ISO Lynx Position data for the specified race.
+        Requires the caller to have access to Isolynx data.
+        Note: Isolynx data is currently only available for Victorian (VIC) races.
+
+        Args:
+            race_id (int): The unique identifier of the race to retrieve ISO Lynx Position data for.
+                        Example value could be 509346808.
+
+        Returns:
+            dict: A dictionary containing ISO Lynx Position data for the runners in the specified race.
+
+        Raises:
+            PermissionError: If the user is not authorized to access this endpoint (HTTP 401 error).
+        """
+        response = requests.get(f"{self.base_url}/isolynx/{race_id}/positions", headers=self.headers, timeout=30)
+        if response.status_code == 200:
+            return response.json()  # Returns a dictionary representing the JSON response
+        elif response.status_code == 401:  # Unauthorized access
+            raise PermissionError("You are not authorized to access this endpoint.")
+        else:
+            response.raise_for_status()  # Raises an HTTPError for other unsuccessful status codes
+
+    def get_isolynx_positions_with_dnf(self, race_id: int) -> dict:
+        """
+        Returns a list of runners with ISO Lynx Position data for the specified race,
+        including runners that did not finish (DNF).
+        Requires the caller to have access to Isolynx data.
+        Note: Isolynx data is currently only available for Victorian (VIC) races.
+
+        Args:
+            race_id (int): The unique identifier of the race to retrieve ISO Lynx Position data for.
+                        Example value could be 509346808.
+
+        Returns:
+            dict: A dictionary containing ISO Lynx Position data (including DNF runners) for the specified race.
+
+        Raises:
+            PermissionError: If the user is not authorized to access this endpoint (HTTP 401 error).
+        """
+        response = requests.get(f"{self.base_url}/isolynx/{race_id}/positionswithdnf", headers=self.headers, timeout=30)
+        if response.status_code == 200:
+            return response.json()  # Returns a dictionary representing the JSON response
+        elif response.status_code == 401:  # Unauthorized access
+            raise PermissionError("You are not authorized to access this endpoint.")
+        else:
+            response.raise_for_status()  # Raises an HTTPError for other unsuccessful status codes
+
     ### Meeting
     def get_meetings(self, from_date: str, to_date: str = None, owning_authority_code: str = None) -> pd.DataFrame:
         """
@@ -485,29 +534,6 @@ class TopazAPI:
         else:
             response.raise_for_status()  # Raises an HTTPError if the HTTP request returned an unsuccessful status code
 
-    def get_races_first_split(self, meeting_id: int) -> dict:
-        """
-        Returns a list of all races for the specified meeting. 
-        Includes First Split data for all dogs where available, and returns the most up-to-date data at all times.
-        Note: This endpoint requires additional permissions.
-
-        Args:
-            meeting_id (int): The unique identifier of the meeting. Example value could be 425059749.
-
-        Returns:
-            dict: A dictionary containing a list of all races with First Split data for the specified meeting.
-
-        Raises:
-            PermissionError: If the user is not authorized to access this endpoint (HTTP 401 error).
-        """
-        response = requests.get(f"{self.base_url}/meeting/{meeting_id}/races/firstsplit", headers=self.headers, timeout=30)
-        if response.status_code == 200:
-            return response.json()  # Returns a dictionary representing the JSON response
-        elif response.status_code == 401:  # Unauthorized access
-            raise PermissionError("You are not authorized to access this endpoint.")
-        else:
-            response.raise_for_status()  # Raises an HTTPError for other unsuccessful status codes
-
     def get_meeting_field(self, meeting_id: int) -> dict:
         """
         Gets a minimal set of the latest field information for a meeting, primarily to get latest scratching and reserve details.
@@ -524,30 +550,13 @@ class TopazAPI:
         else:
             response.raise_for_status()  # Raises an HTTPError if the HTTP request returned an unsuccessful status code
 
-    def get_race_field(self, meeting_id: int, race_id: int) -> pd.DataFrame:
+    def get_meeting_race_field(self, meeting_id: int, race_id: int) -> dict:
         """
         Gets a minimal set of the latest field information for a race within a meeting, primarily to get latest scratching and reserve details.
 
         Args:
             meeting_id (int): The id of the meeting to get the latest field for. E.g. 900012680
             race_id (int): The id of the race within the meeting to get the latest field for. E.g. 972428497
-
-        Returns:
-            pd.DataFrame: A DataFrame containing the latest field information for the specified race within the meeting.
-        """
-        response = requests.get(f"{self.base_url}/meeting/{meeting_id}/field/{race_id}", headers=self.headers, timeout=30)
-        if response.status_code == 200:
-            return pd.DataFrame(response.json())
-        else:
-            response.raise_for_status()  # Raises an HTTPError if the HTTP request returned an unsuccessful status code
-
-    def get_race_field(self, meeting_id: int, race_id: int) -> dict:
-        """
-        Gets a minimal set of the latest field information for a race within a meeting, primarily to get latest scratching and reserve details.
-
-        Args:
-            meeting_id (int): The id of the meeting to get the latest field for.
-            race_id (int): The id of the race within the meeting to get the latest field for.
 
         Returns:
             dict: A dictionary containing the latest field information for the specified race within the meeting.
@@ -661,29 +670,6 @@ class TopazAPI:
             return response.json()  # Returns a dictionary representing the JSON response
         else:
             response.raise_for_status()  # Raises an HTTPError if the HTTP request returned an unsuccessful status code
-
-    def get_race_runs_first_split(self, race_id: int) -> dict:
-        """
-        Returns a list of dogs and the details of their run within the specified race. 
-        The results of this call include First Split information for each run if available and always returns the latest information.
-        Note: This endpoint requires additional permissions.
-
-        Args:
-            race_id (int): The unique identifier of the race. Example value could be 509346808.
-
-        Returns:
-            dict: A dictionary containing the list of dogs and the details of their runs, including First Split information, in the specified race.
-        
-        Raises:
-            PermissionError: If the user is not authorized to access this endpoint (HTTP 401 error).
-        """
-        response = requests.get(f"{self.base_url}/race/{race_id}/runs/firstsplit", headers=self.headers, timeout=30)
-        if response.status_code == 200:
-            return response.json()  # Returns a dictionary representing the JSON response
-        elif response.status_code == 401:  # Unauthorized access
-            raise PermissionError("You are not authorized to access this endpoint.")
-        else:
-            response.raise_for_status()  # Raises an HTTPError for other unsuccessful status codes
 
     def get_race_first_split(self, race_id: int) -> dict:
         """

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "Topaz_api"
-version = "0.0.6"
+version = "0.0.7"
 authors = [
   { name="Ivan Zhou", email="ivan.zhou49@gmail.com" },
 ]
@@ -22,8 +22,8 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/pypa/sampleproject"
-Issues = "https://github.com/pypa/sampleproject/issues"
+Homepage = "https://github.com/22252308/Topaz-API"
+Issues = "https://github.com/22252308/Topaz-API/issues"
 
 [tool.setuptools.packages.find]
 where = ["src"]

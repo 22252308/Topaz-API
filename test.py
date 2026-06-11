@@ -1,7 +1,15 @@
 from topaz import TopazAPI
 import pandas as pd
+import os
 
-api_key = 'YOUR_API_KEY_HERE'
+# Reads the API key from the API_KEY environment variable, or a local .env file
+api_key = os.environ.get('API_KEY')
+if not api_key and os.path.exists('.env'):
+    with open('.env') as f:
+        for line in f:
+            if line.startswith('API_KEY='):
+                api_key = line.split('=', 1)[1].strip()
+
 topaz_api = TopazAPI(api_key)
 
 # print(topaz_api.get_dog_colours())
@@ -30,7 +38,7 @@ topaz_api = TopazAPI(api_key)
 # print(topaz_api.get_meeting_races(meeting_id=900012680))
 # print(topaz_api.get_races_first_split(meeting_id=900012680))
 # print(topaz_api.get_meeting_field(meeting_id=900012680))
-# print(topaz_api.get_race_field(meeting_id=900012680, race_id=972428497))
+# print(topaz_api.get_meeting_race_field(meeting_id=900012680, race_id=972428497))
 # print(topaz_api.get_races(from_date= '2023-12-01',to_date = '2023-12-01', owning_authority_code='VIC'))
 # print(topaz_api.get_races_for_meeting(meeting_id=900012673))
 # print(topaz_api.get_race_result(race_id=972428497))
@@ -49,6 +57,10 @@ topaz_api = TopazAPI(api_key)
 # print(topaz_api.get_trial_results(from_date='2023-12-01', to_date='2023-12-06'))
 # print(topaz_api.get_bulk_runs_by_day(owning_authority_code='VIC', year=2023, month=12, day=1))
 # print(topaz_api.get_bulk_runs_by_month(owning_authority_code='VIC', year=2023, month=12))
+# Isolynx endpoints - data only available for VIC races
+# print(topaz_api.get_isolynx_splits(race_id=972428497))
+# print(topaz_api.get_isolynx_positions(race_id=972428497))
+# print(topaz_api.get_isolynx_positions_with_dnf(race_id=972428497))
 
 authority_codes = ['NSW', 'NT', 'QLD', 'SA', 'TAS', 'VIC', 'WA']
 all_races = []
